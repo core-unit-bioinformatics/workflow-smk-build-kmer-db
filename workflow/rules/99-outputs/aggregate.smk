@@ -1,0 +1,5 @@
+
+WORKFLOW_OUTPUT = []
+
+# add meryl output
+WORKFLOW_OUTPUT.extend(MERYL_WORKFLOW_OUTPUT)
