@@ -6,7 +6,7 @@ version = "prototype"
 [cubi.workflow.template]
 pid = "undefined"
 system = "smk"
-version = "1.0.0"
+version = "1.0.0-dirty-local"
 
 [cubi.metadata]
 pid = "undefined"
