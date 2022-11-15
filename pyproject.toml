@@ -3,10 +3,13 @@ pid = "undefined"
 name = "build-kmer-db"
 version = "prototype"
 
+# the template code used for prototype
+# development includes workarounds/fixes
+# for template-snakemake issues 14-17
 [cubi.workflow.template]
 pid = "undefined"
 system = "smk"
-version = "1.0.0-dirty-local"
+version = "1.0.0-dirty-fix"
 
 [cubi.metadata]
 pid = "undefined"
