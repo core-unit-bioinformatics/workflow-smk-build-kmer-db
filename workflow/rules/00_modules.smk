@@ -10,6 +10,8 @@ include: "00-prepare/sample_table.smk"
 include: "10-singles/meryl.smk"
 include: "20-trios/meryl.smk"
 
+include: "50-statistics/meryl.smk"
+
 include: "99-outputs/meryl.smk"
 
 include: "99-outputs/aggregate.smk"
