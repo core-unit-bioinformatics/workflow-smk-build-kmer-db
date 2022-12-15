@@ -161,9 +161,13 @@ def main():
     stats_distinct = df_stats.loc["distinct_kmers"]["value"]
     stats_total = df_stats.loc["present_kmers"]["value"]
 
-    histogram_unique = df_hist.loc[
-        df_hist["frequency"] == 1, "num_distinct_kmers"
-    ].values[0]
+    try:
+        histogram_unique = df_hist.loc[
+            df_hist["frequency"] == 1, "num_distinct_kmers"
+        ].values[0]
+    except IndexError:
+        assert stats_unique == 0
+        histogram_unique = 0
     histogram_distinct = df_hist["num_distinct_kmers"].sum()
     histogram_total = (df_hist["num_distinct_kmers"] * df_hist["frequency"]).sum()
 
