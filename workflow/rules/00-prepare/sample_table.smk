@@ -36,9 +36,16 @@ def process_sample_sheet():
     global MAP_SAMPLE_TO_INPUT_FILE
     MAP_SAMPLE_TO_INPUT_FILE = sample_input
     global MAP_SAMPLE_TO_PART_IDS
-    MAP_SAMPLE_TO_PART_IDS = dict(
-        (sample, path_hash) for (sample, path_hash) in sample_input.keys() if path_hash is not None
-    )
+
+    # this mapping contains the info which parts (= individual
+    # input files) have to be present for a sample before the
+    # kmers will be merged into a single database
+    MAP_SAMPLE_TO_PART_IDS = collections.defaultdict(set)
+    for (sample, path_hash) in sample_input.keys():
+        if path_hash is None:
+            continue
+        MAP_SAMPLE_TO_PART_IDS[sample].add(path_hash)
+
     global CONSTRAINT_SAMPLES_SINGLE_INPUT
     CONSTRAINT_SAMPLES_SINGLE_INPUT = _build_constraint(single_input_samples)
     global CONSTRAINT_SAMPLES_MULTI_INPUT
