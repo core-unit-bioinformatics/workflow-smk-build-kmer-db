@@ -90,4 +90,15 @@ rule meryl_run_singles:
             sample=SAMPLES,
             size_k=config["meryl_kmer_size"],
             hpc=MERYL_COMPRESS_WILDCARD_VALUES
-        )
+        ),
+        meryl_single_db_stats = expand(
+            DIR_RES.joinpath(
+                "50-statistics", "{scenario}", "meryl",
+                "{sample}.k{size_k}.{hpc}.geq{min_kfreq}.meryl-stats.tsv"
+            ),
+            scenario=["10-singles"],
+            sample=SAMPLES,
+            size_k=config["meryl_kmer_size"],
+            hpc=MERYL_COMPRESS_WILDCARD_VALUES,
+            min_kfreq=config["meryl_min_kfreq"]
+        ),

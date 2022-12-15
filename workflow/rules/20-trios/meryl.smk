@@ -108,4 +108,16 @@ rule meryl_run_trios:
             size_k=config["meryl_kmer_size"],
             hpc=MERYL_COMPRESS_WILDCARD_VALUES,
             min_kfreq=config["meryl_min_kfreq"]
-        )
+        ),
+        meryl_trio_db_stats = expand(
+            DIR_RES.joinpath(
+                "50-statistics", "{scenario}", "meryl",
+                "{sample}.{kmer_set}.k{size_k}.{hpc}.geq{min_kfreq}.meryl-stats.tsv"
+            ),
+            scenario=["20-trios"],
+            sample=CHILDREN,
+            kmer_set=["maternal-only", "paternal-only", "parental-shared"],
+            size_k=config["meryl_kmer_size"],
+            hpc=MERYL_COMPRESS_WILDCARD_VALUES,
+            min_kfreq=config["meryl_min_kfreq"]
+        ),
