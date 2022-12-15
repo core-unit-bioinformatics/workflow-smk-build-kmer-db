@@ -1,9 +1,7 @@
 
 rule meryl_dump_db_statistics:
     input:
-        db = directory(
-            DIR_PROC.joinpath("{scenario}", "meryl", "{sample_db}.meryl")
-        )
+        db = DIR_PROC.joinpath("{scenario}", "meryl", "{sample_db}.meryl")
     output:
         stats_dump = DIR_PROC.joinpath(
             "50-statistics", "{scenario}", "meryl", "{sample_db}.meryl-stats.txt"
