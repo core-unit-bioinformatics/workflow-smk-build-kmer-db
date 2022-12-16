@@ -52,7 +52,7 @@ rule meryl_union_part_file_dbs:
     conda:
         "../../envs/meryl.yaml"
     shell:
-        "meryl union {input.dbs} output {output.db} &> {log}"
+        "meryl union-sum {input.dbs} output {output.db} &> {log}"
 
 
 rule meryl_dump_kmers:
