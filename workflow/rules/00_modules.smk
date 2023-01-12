@@ -13,5 +13,3 @@ include: "20-trios/meryl.smk"
 include: "50-statistics/meryl.smk"
 
 include: "99-outputs/meryl.smk"
-
-include: "99-outputs/aggregate.smk"
