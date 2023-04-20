@@ -3,6 +3,7 @@
 import argparse as argp
 import pathlib as pl
 import re as re
+import sys
 
 import pandas as pd
 
@@ -123,10 +124,44 @@ def create_output_path(file_path):
     return file_path
 
 
+def prettify_db_name(db_name):
+
+    ext_to_split = [
+        ".txt",
+        ".tsv",
+        ".stat",
+        ".stats",
+        ".statistic",
+        ".statistics",
+        ".meryl",
+        ".meryl-stat",
+        ".meryl-statistic",
+        ".meryl-stats",
+        ".meryl-statistics",
+        ".meryl_stat",
+        ".meryl_statistic",
+        ".meryl_stats",
+        ".meryl_statistics",
+    ]
+
+    prettified_name = db_name
+    for ext in ext_to_split:
+        if not prettified_name.endswith(ext):
+            continue
+        prettified_name = prettified_name.rsplit(".", 1)[0]
+    if not prettified_name.strip():
+        # some bogus name for testing?
+        prettified_name = db_name
+    return prettified_name
+
+
 def main():
 
     args = parse_command_line()
-
+    db_name = prettify_db_name(
+        args.meryl_stats.name
+    )
+    print(db_name)
     # collect records for count statistics
     # and k-mer histogram
     statistics = []
@@ -150,16 +185,40 @@ def main():
                 continue
             records.append(info)
 
-    df_stats = pd.DataFrame.from_records(statistics, columns=["statistic", "value"])
-    df_stats.set_index("statistic", inplace=True)
-
     df_hist = pd.DataFrame.from_records(histogram)
+    # determine threshold value after which the slope
+    # over 'num_distinct_kmers' turns positive, i.e.
+    # the leftmost index before the inflection point
+    # of the distribution marking the transition
+    # to more trustworthy k-mers
+    # (cf. Merqury, Methods, section "K-mer completeness")
+    decreasing = df_hist.loc[:49, "num_distinct_kmers"].diff()
+    decreasing.fillna(-1 * sys.maxsize, inplace=True)
+    inflection_point = None
+    for idx, value in decreasing.items():
+        if value > 0:
+            # idx-1 => select previous k-mer
+            # frequency value, so the thresholding
+            # has to be larger / grt / greater than
+            # this value
+            inflection_point = df_hist.loc[idx - 1, "frequency"]
+            break
+    if inflection_point is None:
+        raise ValueError(
+            "Cannot determine k-mer frequency threshold"
+            f" for values: {decreasing}"
+        )
+    statistics.append(("kmer_reliable_greater", inflection_point))
+
+    df_stats = pd.DataFrame.from_records(statistics, columns=["statistic", "value"])
+    df_stats["db_name"] = db_name
+    df_stats.set_index(["db_name", "statistic"], inplace=True)
 
     # some sanity checks that could reveal missed
     # data entries in input
-    stats_unique = df_stats.loc["unique_kmers"]["value"]
-    stats_distinct = df_stats.loc["distinct_kmers"]["value"]
-    stats_total = df_stats.loc["present_kmers"]["value"]
+    stats_unique = df_stats.loc[(db_name, "unique_kmers")]["value"]
+    stats_distinct = df_stats.loc[(db_name, "distinct_kmers")]["value"]
+    stats_total = df_stats.loc[(db_name, "present_kmers")]["value"]
 
     try:
         histogram_unique = df_hist.loc[
