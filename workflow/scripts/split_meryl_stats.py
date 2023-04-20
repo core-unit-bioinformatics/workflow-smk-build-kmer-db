@@ -31,6 +31,15 @@ def parse_command_line():
     )
 
     parser.add_argument(
+        "--forced-kmerfreq-threshold",
+        "-f",
+        type=int,
+        default=-1,
+        dest="forced_threshold",
+        help="Record forced threshold if set externally. Default: -1 (None)"
+    )
+
+    parser.add_argument(
         "--out-stats",
         "-os",
         type=lambda x: pl.Path(x).resolve(),
@@ -161,7 +170,6 @@ def main():
     db_name = prettify_db_name(
         args.meryl_stats.name
     )
-    print(db_name)
     # collect records for count statistics
     # and k-mer histogram
     statistics = []
@@ -209,6 +217,8 @@ def main():
             f" for values: {decreasing}"
         )
     statistics.append(("kmer_reliable_greater", inflection_point))
+    assert isinstance(args.forced_threshold, int)
+    statistics.append(("kmer_forced_threshold", args.forced_threshold))
 
     df_stats = pd.DataFrame.from_records(statistics, columns=["statistic", "value"])
     df_stats["db_name"] = db_name
