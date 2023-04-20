@@ -212,12 +212,16 @@ def main():
             inflection_point = df_hist.loc[idx - 1, "frequency"]
             break
     if inflection_point is None:
-        raise ValueError(
-            "Cannot determine k-mer frequency threshold"
-            f" for values: {decreasing}"
-        )
+        if args.forced_threshold > -1:
+            # if a threshold is forced, it's acceptable to not
+            # derive one from the data (user knows more)
+            inflection_point = -1
+        else:
+            raise ValueError(
+                "Cannot determine k-mer frequency threshold"
+                f" for values: {decreasing}"
+            )
     statistics.append(("kmer_reliable_greater", inflection_point))
-    assert isinstance(args.forced_threshold, int)
     statistics.append(("kmer_forced_threshold", args.forced_threshold))
 
     df_stats = pd.DataFrame.from_records(statistics, columns=["statistic", "value"])
