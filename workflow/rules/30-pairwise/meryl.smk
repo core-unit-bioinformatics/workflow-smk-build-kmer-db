@@ -111,7 +111,7 @@ rule meryl_run_pairwise_by_file:
     """
     input:
         dbs = _PAIRWISE_BY_FILE_RESULT_MERYL_DB,
-        stats = lambda wildcards: expand(
+        stats = expand(
             DIR_RES.joinpath(
                 "statistics", "pairwise", "{db_pair}.{operation}.meryl-stats.tsv"
             ),
@@ -130,7 +130,7 @@ rule meryl_run_pairwise_by_sample:
     """
     input:
         dbs = _PAIRWISE_BY_SAMPLE_RESULT_MERYL_DB,
-        stats = lambda wildcards: expand(
+        stats = expand(
             DIR_RES.joinpath(
                 "statistics", "pairwise", "{db_pair}.{operation}.meryl-stats.tsv"
             ),
