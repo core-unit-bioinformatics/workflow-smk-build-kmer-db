@@ -32,7 +32,7 @@ rule meryl_split_statistics_dump:
     output:
         stats = DIR_RES.joinpath(
             "statistics", "{setting}", "{db_name}.meryl-stats.tsv"
-        )
+        ),
         hist = DIR_RES.joinpath(
             "statistics", "{setting}", "{db_name}.meryl-hist.tsv.gz"
         )
