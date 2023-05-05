@@ -135,7 +135,7 @@ rule meryl_run_pairwise_by_sample:
                 "statistics", "pairwise", "{db_pair}.{operation}.meryl-stats.tsv"
             ),
             db_pair=pair_all_inputs(
-                False,  # pair by sample
+                False,
                 MERYL_KMER_VALUES,
                 MERYL_COMPRESS_WILDCARD_VALUES
             ),
