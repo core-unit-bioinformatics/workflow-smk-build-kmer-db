@@ -15,7 +15,7 @@ def pair_all_inputs(by_file, kmer_sizes, hpc_setting):
 
     dbs_to_pair = sorted(dbs_to_pair)
     db_pair_specs = []
-    for (s1, p1), (s2, p2) in itertools.combinations(dbs_to_pair):
+    for (s1, p1), (s2, p2) in itertools.combinations(dbs_to_pair, 2):
         for size_k in kmer_sizes:
             for hpc in hpc_setting:
                 if p1 is None and p2 is None:
