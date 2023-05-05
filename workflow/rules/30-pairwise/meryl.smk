@@ -29,7 +29,7 @@ rule meryl_pairwise_intersect:
     output:
         db = temp(directory(
             DIR_PROC.joinpath("30-pairwise", "meryl", "intersect-min",
-                "{db1}_vs_{db2}.1-or-2.meryl")
+                "{db1}_vs_{db2}.1-and-2.meryl")
         ))
     log:
         DIR_LOG.joinpath("30-pairwise", "meryl", "intersect-min", "{db1}_vs_{db2}.1-and-2.meryl.log")
