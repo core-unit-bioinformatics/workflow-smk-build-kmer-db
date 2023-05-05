@@ -48,12 +48,12 @@ def infer_meryl_single_database_path(database_name):
     assert not database_name.endswith("meryl")
     name_components = database_name.split(".")
     assert name_components[-1] != "meryl"
-    if len(name_components) == 5:
+    if len(name_components) == 4:
         # DB name has part (hash) identifier
         db_path = DIR_PROC.joinpath(
             "10-singles", "meryl", "parts", f"{database_name}.meryl"
         )
-    elif len(name_components) == 4:
+    elif len(name_components) == 3:
         # single input for sample
         db_path = DIR_PROC.joinpath(
             "10-singles", "meryl", f"{database_name}.meryl"
