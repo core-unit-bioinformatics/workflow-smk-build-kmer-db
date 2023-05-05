@@ -36,7 +36,20 @@ def parse_command_line():
         type=int,
         default=-1,
         dest="forced_threshold",
-        help="Record forced threshold if set externally. Default: -1 (None)"
+        help="Record forced threshold if set externally. "
+             "If a forced threshold is set, failing to "
+             "determine a threshold using the data will "
+             "not raise an exception. Default: -1 (none set)"
+    )
+
+    parser.add_argument(
+        "--no-threshold-warning",
+        action="store_true",
+        default=False,
+        dest="no_threshold_warning",
+        help="If set, if no reliable k-mer threshold can be identified AND "
+             "no threshold is forced, just print a warning instead of "
+             "raising an exception (see previous option). Default: False"
     )
 
     parser.add_argument(
@@ -164,6 +177,36 @@ def prettify_db_name(db_name):
     return prettified_name
 
 
+def determine_reliable_threshold(histogram):
+    """Determine threshold value after which the slope
+    over 'num_distinct_kmers' turns positive, i.e.,
+    the leftmost index before the inflection point
+    of the distribution marking the transition
+    to more trustworthy/reliable k-mers.
+    (cf. Merqury, Methods, section "K-mer completeness")
+
+    Args:
+        histogram (pandas.DataFrame):
+    """
+    select_up_to = min(99, histogram.shape[0])
+    decreasing = histogram.loc[:select_up_to, "num_distinct_kmers"].diff()
+    # first value is NaN in the Pandas implementation
+    decreasing.fillna(-1 * sys.maxsize, inplace=True)
+    inflection_point = None
+    for idx, value in decreasing.items():
+        if value > 0:
+            # idx-1 => select previous k-mer
+            # frequency value, so the thresholding
+            # has to be larger / grt / greater than
+            # this value
+            inflection_point = histogram.loc[idx-1, "frequency"]
+            break
+    # NB: inflection point can still be None,
+    # e.g., for prefiltered data. That needs
+    # to be checked in the calling scope.
+    return inflection_point
+
+
 def main():
 
     args = parse_command_line()
@@ -194,35 +237,37 @@ def main():
             records.append(info)
 
     df_hist = pd.DataFrame.from_records(histogram)
-    # determine threshold value after which the slope
-    # over 'num_distinct_kmers' turns positive, i.e.
-    # the leftmost index before the inflection point
-    # of the distribution marking the transition
-    # to more trustworthy k-mers
-    # (cf. Merqury, Methods, section "K-mer completeness")
-    decreasing = df_hist.loc[:49, "num_distinct_kmers"].diff()
-    decreasing.fillna(-1 * sys.maxsize, inplace=True)
-    inflection_point = None
-    for idx, value in decreasing.items():
-        if value > 0:
-            # idx-1 => select previous k-mer
-            # frequency value, so the thresholding
-            # has to be larger / grt / greater than
-            # this value
-            inflection_point = df_hist.loc[idx - 1, "frequency"]
-            break
-    if inflection_point is None:
-        if args.forced_threshold > -1:
-            # if a threshold is forced, it's acceptable to not
-            # derive one from the data (user knows more)
-            inflection_point = -1
+
+    min_kmer_frequency = df_hist["frequency"].min()
+    assert min_kmer_frequency > 0
+    statistics.append(("kmer_frequency_min", min_kmer_frequency))
+    max_kmer_frequency = df_hist["frequency"].max()
+    statistics.append(("kmer_frequency_max", max_kmer_frequency))
+
+    reliable_kmer_threshold = determine_reliable_threshold(df_hist)
+    threshold_is_forced = args.forced_threshold > -1
+    # if this is a k-mer set that has already been filtered,
+    # computing the boundary towards more reliable k-mers
+    # will likely fail and that should be acceptable
+    kmerset_is_filtered = min_kmer_frequency != 1
+
+    if reliable_kmer_threshold is None:
+        if threshold_is_forced:
+            statistics.append(("kmer_reliable_greater", -1))
+            statistics.append(("kmer_forced_threshold", args.forced_threshold))
+        elif args.no_threshold_warning or kmerset_is_filtered:
+            # no threshold id'ed, no threshold forced
+            warn_msg = f"\nWarning: no 'reliable k-mer' threshold could be identified for {db_name}\n"
+            sys.stderr.write(warn_msg)
+            statistics.append(("kmer_reliable_greater", -1))
+            statistics.append(("kmer_forced_threshold", args.forced_threshold))
         else:
-            raise ValueError(
-                "Cannot determine k-mer frequency threshold"
-                f" for values: {decreasing}"
-            )
-    statistics.append(("kmer_reliable_greater", inflection_point))
-    statistics.append(("kmer_forced_threshold", args.forced_threshold))
+            # no threshold id'ed, no threshold forced, and not just warning => raise
+            err_msg = f"ERROR: no 'reliable k-mer' threshold could be identified for {db_name}"
+            raise ValueError(err_msg)
+    else:
+        statistics.append(("kmer_reliable_greater", reliable_kmer_threshold))
+        statistics.append(("kmer_forced_threshold", args.forced_threshold))
 
     df_stats = pd.DataFrame.from_records(statistics, columns=["statistic", "value"])
     df_stats["db_name"] = db_name

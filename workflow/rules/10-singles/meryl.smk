@@ -3,9 +3,9 @@ rule meryl_dump_part_file_dbs:
     input:
         seq = lambda wildcards: MAP_SAMPLE_TO_INPUT_FILE[(wildcards.sample, wildcards.part)]
     output:
-        db = directory(
+        db = temp(directory(
             DIR_PROC.joinpath("10-singles", "meryl", "parts", "{sample}.{part}.k{size_k}.{hpc}.meryl")
-        )
+        ))
     log:
         DIR_LOG.joinpath("10-singles", "meryl", "parts", "{sample}.{part}.k{size_k}.{hpc}.meryl.log")
     benchmark:
@@ -18,7 +18,7 @@ rule meryl_dump_part_file_dbs:
         mem_gb = lambda wildcards, attempt: 32 * attempt,
         time_hrs = lambda wildcards, attempt: 4 * attempt,
     conda:
-        "../../envs/meryl.yaml"
+        DIR_ENVS.joinpath("meryl.yaml")
     params:
         compress = lambda wildcards: "compress" if wildcards.hpc == "is-hpc" else "",
         acc_in=lambda wildcards, input: register_input(input.seq, allow_non_existing=True),
@@ -35,9 +35,9 @@ rule meryl_union_part_file_dbs:
                 part=MAP_SAMPLE_TO_PART_IDS[wildcards.sample]
             )
     output:
-        db = directory(
+        db = temp(directory(
             DIR_PROC.joinpath("10-singles", "meryl", "{sample}.k{size_k}.{hpc}.meryl")
-        )
+        ))
     log:
         DIR_LOG.joinpath("10-singles", "meryl", "{sample}.k{size_k}.{hpc}.meryl.log")
     benchmark:
@@ -50,7 +50,7 @@ rule meryl_union_part_file_dbs:
         mem_gb = lambda wildcards, attempt: 32 * attempt,
         time_hrs = lambda wildcards, attempt: 1 * attempt,
     conda:
-        "../../envs/meryl.yaml"
+        DIR_ENVS.joinpath("meryl.yaml")
     shell:
         "meryl union-sum {input.dbs} output {output.db} &> {log}"
 
@@ -59,9 +59,9 @@ rule meryl_dump_kmers:
     input:
         seq = lambda wildcards: MAP_SAMPLE_TO_INPUT_FILE[(wildcards.sample, None)]
     output:
-        db = directory(
+        db = temp(directory(
             DIR_PROC.joinpath("10-singles", "meryl", "{sample}.k{size_k}.{hpc}.meryl")
-        )
+        ))
     log:
         DIR_LOG.joinpath("10-singles", "meryl", "{sample}.k{size_k}.{hpc}.meryl.log")
     benchmark:
@@ -74,7 +74,7 @@ rule meryl_dump_kmers:
         mem_gb = lambda wildcards, attempt: 32 * attempt,
         time_hrs = lambda wildcards, attempt: 4 * attempt,
     conda:
-        "../../envs/meryl.yaml"
+        DIR_ENVS.joinpath("meryl.yaml")
     params:
         compress = lambda wildcards: "compress" if wildcards.hpc == "is-hpc" else "",
         acc_in=lambda wildcards, input: register_input(input.seq, allow_non_existing=True),
@@ -83,22 +83,22 @@ rule meryl_dump_kmers:
             "{params.compress} {input.seq} output {output.db} &> {log}"
 
 
+_SINGLES_RESULT_MERYL_DB = expand(
+    DIR_RES.joinpath("databases", "singles", "{sample}.k{size_k}.{hpc}.meryl.tar.gz"),
+    sample=SAMPLES,
+    size_k=MERYL_KMER_VALUES,
+    hpc=MERYL_COMPRESS_WILDCARD_VALUES
+),
+if DISCARD_KMER_DATABASES:
+    _SINGLES_RESULT_MERYL_DB = []
+
+
 rule meryl_run_singles:
     input:
-        meryl_single_dbs = expand(
-            DIR_PROC.joinpath("10-singles", "meryl", "{sample}.k{size_k}.{hpc}.meryl"),
+        dbs = _SINGLES_RESULT_MERYL_DB,
+        stats = expand(
+            DIR_RES.joinpath("statistics", "singles", "{sample}.k{size_k}.{hpc}.meryl-stats.tsv"),
             sample=SAMPLES,
-            size_k=config["meryl_kmer_size"],
-            hpc=MERYL_COMPRESS_WILDCARD_VALUES
-        ),
-        meryl_single_db_stats = expand(
-            DIR_RES.joinpath(
-                "50-statistics", "{scenario}", "meryl",
-                "{sample}.k{size_k}.{hpc}.geq{min_kfreq}.meryl-stats.tsv"
-            ),
-            scenario=["10-singles"],
-            sample=SAMPLES,
-            size_k=config["meryl_kmer_size"],
+            size_k=MERYL_KMER_VALUES,
             hpc=MERYL_COMPRESS_WILDCARD_VALUES,
-            min_kfreq=config["meryl_min_kfreq"]
         ),

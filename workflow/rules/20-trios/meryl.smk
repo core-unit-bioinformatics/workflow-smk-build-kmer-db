@@ -2,42 +2,52 @@
 rule meryl_create_inherited_kmer_dbs:
     input:
         child = DIR_PROC.joinpath("10-singles", "meryl", "{child}.k{size_k}.{hpc}.meryl"),
+        child_stats = DIR_PROC.joinpath("10-singles", "meryl", "{child}.k{size_k}.{hpc}.meryl-stats.tsv"),
         parent = lambda wildcards: expand(
             DIR_PROC.joinpath("10-singles", "meryl", "{parent}.k{{size_k}}.{{hpc}}.meryl"),
             parent=MAP_TRIOS[wildcards.child]["mother"] \
                 if wildcards.hap == "maternal" \
                 else MAP_TRIOS[wildcards.child]["father"]
-        )
+        ),
+        parent_stats = lambda wildcards: expand(
+            DIR_PROC.joinpath("10-singles", "meryl", "{parent}.k{{size_k}}.{{hpc}}.meryl-stats.tsv"),
+            parent=MAP_TRIOS[wildcards.child]["mother"] \
+                if wildcards.hap == "maternal" \
+                else MAP_TRIOS[wildcards.child]["father"]
+        ),
     output:
-        db = directory(
+        db = temp(directory(
             DIR_PROC.joinpath(
                 "20-trios", "meryl",
-                "{child}.{hap}.k{size_k}.{hpc}.geq{min_freq}.meryl"
+                "{child}.{hap}.k{size_k}.{hpc}.meryl"
             )
-        )
+        ))
     log:
         DIR_LOG.joinpath(
                 "20-trios", "meryl",
-                "{child}.{hap}.k{size_k}.{hpc}.geq{min_freq}.meryl.log"
+                "{child}.{hap}.k{size_k}.{hpc}.meryl.log"
             )
     benchmark:
         DIR_RSRC.joinpath(
                 "20-trios", "meryl",
-                "{child}.{hap}.k{size_k}.{hpc}.geq{min_freq}.meryl.rsrc"
+                "{child}.{hap}.k{size_k}.{hpc}.meryl.rsrc"
             )
     wildcard_constraints:
         hap = "(maternal|paternal)"
     conda:
-        "../../envs/meryl.yaml"
+        DIR_ENVS.joinpath("meryl.yaml")
     threads: 1
     resources:
         mem_mb = lambda wildcards, attempt: 16384 * attempt,
         time_hrs = lambda wildcards, attempt: attempt * attempt,
     params:
-        min_kfreq = lambda wildcards: int(wildcards.min_freq) - 1  # meryl only knows "greater-than"
+        min_kfreq_child = lambda wildcards, input: load_reliable_kmer_threshold(input.child_stats),
+        min_kfreq_parent = lambda wildcards, input: load_reliable_kmer_threshold(input.parent_stats),
     shell:
-        "meryl greater-than {params.min_kfreq} "
-            "[ intersect-min {input.child} {input.parent} ] output {output.db} "
+        "meryl intersect-min "
+            "[ greater-than {params.min_kfreq_child} {input.child} ] "
+            "[ greater-than {parmas.min_kfreq_parent} {input.parent} ] "
+            " output {output.db} "
             "&> {log}"
 
 
@@ -45,47 +55,47 @@ rule meryl_create_specific_and_shared_kmer_dbs:
     input:
         mat = DIR_PROC.joinpath(
                 "20-trios", "meryl",
-                "{child}.maternal.k{size_k}.{hpc}.geq{min_freq}.meryl"
+                "{child}.maternal.k{size_k}.{hpc}.meryl"
             ),
         pat = DIR_PROC.joinpath(
                 "20-trios", "meryl",
-                "{child}.paternal.k{size_k}.{hpc}.geq{min_freq}.meryl"
+                "{child}.paternal.k{size_k}.{hpc}.meryl"
             )
     output:
-        mat_only = directory(
+        mat_only = temp(directory(
             DIR_PROC.joinpath(
                 "20-trios", "meryl",
-                "{child}.maternal-only.k{size_k}.{hpc}.geq{min_freq}.meryl"
+                "{child}.maternal-only.k{size_k}.{hpc}.meryl"
             )
-        ),
-        pat_only = directory(
+        )),
+        pat_only = temp(directory(
             DIR_PROC.joinpath(
                 "20-trios", "meryl",
-                "{child}.paternal-only.k{size_k}.{hpc}.geq{min_freq}.meryl"
+                "{child}.paternal-only.k{size_k}.{hpc}.meryl"
             )
-        ),
-        shared = directory(
+        )),
+        shared = temp(directory(
             DIR_PROC.joinpath(
                 "20-trios", "meryl",
-                "{child}.parental-shared.k{size_k}.{hpc}.geq{min_freq}.meryl"
+                "{child}.parental-shared.k{size_k}.{hpc}.meryl"
             )
-        )
+        ))
     log:
         DIR_LOG.joinpath(
             "20-trios", "meryl",
-            "{child}.parents.k{size_k}.{hpc}.geq{min_freq}.meryl.log"
+            "{child}.parents.k{size_k}.{hpc}.meryl.log"
         )
     benchmark:
         DIR_RSRC.joinpath(
             "20-trios", "meryl",
-            "{child}.parents.k{size_k}.{hpc}.geq{min_freq}.meryl.rsrc"
+            "{child}.parents.k{size_k}.{hpc}.meryl.rsrc"
         )
     threads: 1
     resources:
         mem_mb = lambda wildcards, attempt: 8192 * attempt,
         time_hrs = lambda wildcards, attempt: attempt * attempt,
     conda:
-        "../../envs/meryl.yaml"
+        DIR_ENVS.joinpath("meryl.yaml")
     params:
         tmp_shared = lambda wildcards, output: output.shared.replace(".meryl", ".tmp-db.meryl")
     shell:
@@ -100,24 +110,24 @@ rule meryl_create_specific_and_shared_kmer_dbs:
         "rm -rf {params.tmp_shared}"
 
 
+_TRIOS_RESULT_MERYL_DB = expand(
+    DIR_RES.joinpath("databases", "trios", "{sample}.{kmer_set}.k{size_k}.{hpc}.meryl.tar.gz"),
+    sample=CHILDREN,
+    kmer_set=["maternal-only", "paternal-only", "parental-shared"],
+    size_k=config["meryl_kmer_size"],
+    hpc=MERYL_COMPRESS_WILDCARD_VALUES,
+)
+if DISCARD_KMER_DATABASES:
+    _TRIOS_RESULT_MERYL_DB = []
+
+
 rule meryl_run_trios:
     input:
-        meryl_trio_dbs = expand(
-            DIR_PROC.joinpath("20-trios", "meryl", "{sample}.parental-shared.k{size_k}.{hpc}.geq{min_kfreq}.meryl"),
-            sample=CHILDREN,
-            size_k=config["meryl_kmer_size"],
-            hpc=MERYL_COMPRESS_WILDCARD_VALUES,
-            min_kfreq=config["meryl_min_kfreq"]
-        ),
-        meryl_trio_db_stats = expand(
-            DIR_RES.joinpath(
-                "50-statistics", "{scenario}", "meryl",
-                "{sample}.{kmer_set}.k{size_k}.{hpc}.geq{min_kfreq}.meryl-stats.tsv"
-            ),
-            scenario=["20-trios"],
+        dbs = [],
+        stats = expand(
+            DIR_RES.joinpath("statistics", "trios", "{sample}.{kmer_set}.k{size_k}.{hpc}.meryl-stats.tsv"),
             sample=CHILDREN,
             kmer_set=["maternal-only", "paternal-only", "parental-shared"],
             size_k=config["meryl_kmer_size"],
             hpc=MERYL_COMPRESS_WILDCARD_VALUES,
-            min_kfreq=config["meryl_min_kfreq"]
         ),
