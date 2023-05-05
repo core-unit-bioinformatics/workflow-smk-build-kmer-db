@@ -1,0 +1,10 @@
+"""
+Separate config file to trigger keeping all
+k-mer databases in addition to the statistics
+output. This may require a lot of diskspace
+when running pairwise comparisons!
+The inverse of this run mode can be triggered
+by using the `keep_db.yaml` config file.
+"""
+
+discard_kmer_databases: false

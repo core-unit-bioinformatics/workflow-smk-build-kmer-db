@@ -1,0 +1,9 @@
+"""
+Separate config file to trigger discarding all
+k-mer databases as soon as they are no longer
+needed. This keeps only the statistics output.
+The inverse of this run mode can be triggered
+by using the `keep_db.yaml` config file.
+"""
+
+discard_kmer_databases: true

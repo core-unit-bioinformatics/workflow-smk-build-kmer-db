@@ -2,6 +2,9 @@
 process_singletons: True
 process_trios: True
 
+compare_pairwise_by_file: False
+compare_pairwise_by_sample: False
+
 # some common file format
 # extensions to collect input
 # from folders via (recursive)
@@ -14,7 +17,20 @@ input_file_ext:
   - fna.gz
   - fasta
 
-meryl_min_kfreq: 5
+# for operations that use a minimum
+# value for the k-mer multiplicity
+# (frequency) to subset a k-mer
+# database to a more reliable set
+# (fewer error k-mers), force this
+# threshold instead of using a
+# data-derived one. Setting this
+# to -1 deactivates the option.
+# Setting this to zero uses all
+# k-mers, which should be done
+# if the workflow input consists
+# of virtually error-free sequence
+# data.
+force_kmerfreq_threshold: -1
 
 # this output is used in winnowmap
 extract_high_freq_kmer: false
@@ -33,7 +49,7 @@ meryl_kmer_size:
 # 1 => yes
 # 0 => run both options
 # -1 => no
-meryl_compress: 1
+meryl_compress: -1
 
 # Config options to use reference container
 # as part of the pipeline
