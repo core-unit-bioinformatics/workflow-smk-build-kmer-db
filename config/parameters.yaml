@@ -36,21 +36,6 @@ force_kmerfreq_threshold: -1
 extract_high_freq_kmer: false
 high_freq_threshold: 0.9998
 
-# k=21 recommended for human
-# haploid/diploid input
-meryl_kmer_size:
-  - 21
-# other common values:
-# k=15 for winnowmap reads-to-ref
-# k=19 for winnowmap contig-to-ref
-
-# count k-mers in homopolymer-
-# compressed space
-# 1 => yes
-# 0 => run both options
-# -1 => no
-meryl_compress: -1
-
 # Config options to use reference container
 # as part of the pipeline
 use_reference_container: false

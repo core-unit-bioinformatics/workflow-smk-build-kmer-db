@@ -7,9 +7,11 @@ PROCESS_TRIOS = config.get("process_trios", True)
 COMPARE_PAIRWISE_BY_FILE = config.get("compare_pairwise_by_file", False)
 COMPARE_PAIRWISE_BY_SAMPLE = config.get("compare_pairwise_by_sample", False)
 
-DISCARD_KMER_DATABASES = config.get("discard_kmer_databases", False)
+DOWNSAMPLE_COMPARISONS = config.get("downsample_comparisons", 0.)
+assert isinstance(downsample_comparisons, float)
+assert 0. <= DOWNSAMPLE_COMPARISONS < 1
 
-RUN_MERYL = config.get("run_meryl", True)
+DISCARD_KMER_DATABASES = config.get("discard_kmer_databases", False)
 
 FORCE_KMERFREQ_THRESHOLD = config.get("force_kmerfreq_threshold", -1)
 assert isinstance(FORCE_KMERFREQ_THRESHOLD, int)
@@ -20,9 +22,11 @@ assert isinstance(FORCE_KMERFREQ_THRESHOLD, int)
 # MERYL k-mer databases
 #======================
 
+RUN_MERYL = config.get("run_meryl", False)
+
 # produce homopolymer-compressed
 # output yes/no/both
-MERYL_COMPRESS_CONFIG_OPTION = config["meryl_compress"]
+MERYL_COMPRESS_CONFIG_OPTION = config.get("meryl_compress", -1)
 assert isinstance(MERYL_COMPRESS_CONFIG_OPTION, int)
 
 MAP_MERYL_COMPRESS_CONFIG_OPTION = {

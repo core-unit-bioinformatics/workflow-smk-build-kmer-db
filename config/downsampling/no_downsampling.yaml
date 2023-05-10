@@ -1,0 +1,20 @@
+
+# see options
+#compare_pairwise_by_file: False
+#compare_pairwise_by_sample: False
+# in main parameter config file
+
+
+# the all vs all comparison by file
+# or sample can result in thousands
+# of jobs. Snakemake's batch function
+# does not really alleviate the problem
+# of a large setup times because there
+# are not intermediate aggregation rules.
+# Hence, if the following value is larger 0,
+# the combinations will be randomly
+# downsampled to this fraction per run (0 ... 1).
+# Eventually, Snakemake must be executed with
+# downsample_comparisons: 0
+# to finalize the workflow run.
+downsample_comparisons: 0

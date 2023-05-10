@@ -6,6 +6,8 @@ def pair_all_inputs(by_file, kmer_sizes, hpc_setting):
     hpc_setting: count in homopolymer-compressed space
     """
 
+    _this_fun = "30-pairwise::pyutils.smk::pair_all_inputs"
+
     if by_file:
         # pair all input files / created databases
         dbs_to_pair = list(MAP_SAMPLE_TO_INPUT_FILE.keys())
@@ -33,6 +35,32 @@ def pair_all_inputs(by_file, kmer_sizes, hpc_setting):
                 pair_spec = f"{db1}_vs_{db2}"
                 db_pair_specs.append(pair_spec)
     assert db_pair_specs
+
+    if DOWNSAMPLE_COMPARISONS > 0.:
+        import random
+        random.seed(None)
+        select_subset = int(len(db_pair_specs) * DOWNSAMPLE_COMPARISONS)
+        if 0 <= select_subset < 1:
+            if VERBOSE:
+                warn_msg = (
+                    f"WARNING: {_this_fun}\n"
+                    f"Downsampling comparisons (total: {len(db_pair_specs)}) "
+                    f"to fraction {DOWNSAMPLE_COMPARISONS} resulted in 0-length "
+                    "subset. Increasing subset size to 1\n"
+                )
+                logerr(warn_msg)
+            select_subset = 1
+        elif select_subset >= 1:
+            if VERBOSE:
+                info_msg = (
+                    f"INFO: {_this_fun}\n"
+                    f"Downsampling comparisons from a total of {len(db_pair_specs)} "
+                    f"to a subset of size {select_subset} to be processed in this run.\n"
+                )
+                logout(info_msg)
+        else:
+            raise ValueError(f"ERROR {_this_fun}: illegal subset size: {select_subset}")
+        db_pair_specs = random.sample(db_pair_specs, select_subset)
 
     return db_pair_specs
 
