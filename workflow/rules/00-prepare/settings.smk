@@ -8,7 +8,7 @@ COMPARE_PAIRWISE_BY_FILE = config.get("compare_pairwise_by_file", False)
 COMPARE_PAIRWISE_BY_SAMPLE = config.get("compare_pairwise_by_sample", False)
 
 DOWNSAMPLE_COMPARISONS = config.get("downsample_comparisons", 0.)
-assert isinstance(downsample_comparisons, float)
+assert isinstance(DOWNSAMPLE_COMPARISONS, float)
 assert 0. <= DOWNSAMPLE_COMPARISONS < 1
 
 DISCARD_KMER_DATABASES = config.get("discard_kmer_databases", False)
