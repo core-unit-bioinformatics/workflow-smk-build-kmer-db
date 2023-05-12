@@ -3,7 +3,9 @@
 rule meryl_pairwise_union:
     input:
         db1 = lambda wildcards: infer_meryl_single_database_path(wildcards.db1),
+        stats1 = lambda wildcards: infer_meryl_single_database_path(wildcards.db1, stats_path=True),
         db2 = lambda wildcards: infer_meryl_single_database_path(wildcards.db2),
+        stats2 = lambda wildcards: infer_meryl_single_database_path(wildcards.db2, stats_path=True),
     output:
         db = temp(directory(
             DIR_PROC.joinpath("30-pairwise", "meryl", "union-sum",
@@ -18,14 +20,23 @@ rule meryl_pairwise_union:
         time_hrs = lambda wildcards, attempt: 1 * attempt,
     conda:
         DIR_ENVS.joinpath("meryl.yaml")
+    params:
+        min_kfreq_db1 = lambda wildcards, input: load_reliable_kmer_threshold(input.stats1),
+        min_kfreq_db2 = lambda wildcards, input: load_reliable_kmer_threshold(input.stats2),
     shell:
-        "meryl union-sum {input.db1} {input.db2} output {output.db} &> {log}"
+        "meryl union-sum "
+            "[ greater-than {params.min_kfreq_db1} {input.db1} ] "
+            "[ greater-than {parmas.min_kfreq_db2} {input.db2} ] "
+            " output {output.db} "
+            "&> {log}"
 
 
 rule meryl_pairwise_intersect:
     input:
         db1 = lambda wildcards: infer_meryl_single_database_path(wildcards.db1),
+        stats1 = lambda wildcards: infer_meryl_single_database_path(wildcards.db1, stats_path=True),
         db2 = lambda wildcards: infer_meryl_single_database_path(wildcards.db2),
+        stats2 = lambda wildcards: infer_meryl_single_database_path(wildcards.db2, stats_path=True),
     output:
         db = temp(directory(
             DIR_PROC.joinpath("30-pairwise", "meryl", "intersect-min",
@@ -40,14 +51,23 @@ rule meryl_pairwise_intersect:
         time_hrs = lambda wildcards, attempt: 1 * attempt,
     conda:
         DIR_ENVS.joinpath("meryl.yaml")
+    params:
+        min_kfreq_db1 = lambda wildcards, input: load_reliable_kmer_threshold(input.stats1),
+        min_kfreq_db2 = lambda wildcards, input: load_reliable_kmer_threshold(input.stats2),
     shell:
-        "meryl intersect-min {input.db1} {input.db2} output {output.db} &> {log}"
+        "meryl intersect-min "
+            "[ greater-than {params.min_kfreq_db1} {input.db1} ] "
+            "[ greater-than {parmas.min_kfreq_db2} {input.db2} ] "
+            " output {output.db} "
+            "&> {log}"
 
 
 rule meryl_pairwise_difference:
     input:
         db1 = lambda wildcards: infer_meryl_single_database_path(wildcards.db1),
+        stats1 = lambda wildcards: infer_meryl_single_database_path(wildcards.db1, stats_path=True),
         db2 = lambda wildcards: infer_meryl_single_database_path(wildcards.db2),
+        stats2 = lambda wildcards: infer_meryl_single_database_path(wildcards.db2, stats_path=True),
     output:
         db12 = temp(directory(
             DIR_PROC.joinpath("30-pairwise", "meryl", "difference",
@@ -66,10 +86,21 @@ rule meryl_pairwise_difference:
         time_hrs = lambda wildcards, attempt: 1 * attempt,
     conda:
         DIR_ENVS.joinpath("meryl.yaml")
+    params:
+        min_kfreq_db1 = lambda wildcards, input: load_reliable_kmer_threshold(input.stats1),
+        min_kfreq_db2 = lambda wildcards, input: load_reliable_kmer_threshold(input.stats2),
     shell:
-        "meryl difference {input.db1} {input.db2} output {output.db12} &> {log}"
+        "meryl difference "
+            "[ greater-than {params.min_kfreq_db1} {input.db1} ] "
+            "[ greater-than {parmas.min_kfreq_db2} {input.db2} ] "
+            " output {output.db12} "
+            "&> {log}"
             " && "
-        "meryl difference {input.db2} {input.db1} output {output.db21} &>> {log}"
+        "meryl difference "
+            "[ greater-than {params.min_kfreq_db2} {input.db2} ] "
+            "[ greater-than {parmas.min_kfreq_db1} {input.db1} ] "
+            " output {output.db21} "
+            "&>> {log}"
 
 
 ##########################

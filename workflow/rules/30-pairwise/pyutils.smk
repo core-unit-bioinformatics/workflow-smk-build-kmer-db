@@ -65,7 +65,7 @@ def pair_all_inputs(by_file, kmer_sizes, hpc_setting):
     return db_pair_specs
 
 
-def infer_meryl_single_database_path(database_name):
+def infer_meryl_single_database_path(database_name, stats_path=False):
     """ Pairwise computations may require
     working with individual input files
     (e.g., SMRT or Flow cells), hence the required
@@ -93,5 +93,12 @@ def infer_meryl_single_database_path(database_name):
         )
         logerr(errmsg)
         raise ValueError(f"Cannot process database name: {database_name}")
+
+    if stats_path:
+        db_name = db_path.name
+        db_path = DIR_RES.joinpath(
+            "statistics", "singles", db_name
+        )
+        db_path = db_path.with_suffix(".meryl-stats.tsv")
 
     return db_path
