@@ -46,7 +46,7 @@ rule meryl_create_inherited_kmer_dbs:
     shell:
         "meryl intersect-min "
             "[ greater-than {params.min_kfreq_child} {input.child} ] "
-            "[ greater-than {parmas.min_kfreq_parent} {input.parent} ] "
+            "[ greater-than {params.min_kfreq_parent} {input.parent} ] "
             " output {output.db} "
             "&> {log}"
 
