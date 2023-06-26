@@ -123,7 +123,7 @@ if DISCARD_KMER_DATABASES:
 
 rule meryl_run_trios:
     input:
-        dbs = [],
+        dbs = _TRIOS_RESULT_MERYL_DB,
         stats = expand(
             DIR_RES.joinpath("statistics", "trios", "{sample}.{kmer_set}.k{size_k}.{hpc}.meryl-stats.tsv"),
             sample=CHILDREN,
