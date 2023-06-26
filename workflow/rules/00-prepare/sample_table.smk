@@ -63,6 +63,52 @@ def process_sample_sheet():
     return
 
 
+def _read_input_files_from_fofn(fofn_path):
+    """Read input file listing from
+    file of file names
+    TODO: candidate for inclusion in template
+    """
+
+    input_files = []
+    with open(fofn_path, "r") as listing:
+        for line in listing:
+            if not line.strip():
+                continue
+            try:
+                file_path = pathlib.Path(line.strip()).resolve(strict=True)
+            except FileNotFoundError:
+                try:
+                    file_path = DATA_ROOT.joinpath(line.strip()).resolve(strict=True)
+                except FileNotFoundError:
+                    err_msg = "\nERROR\n"
+                    err_msg += f"Cannot find file: {line.strip}\n"
+                    err_msg += f"Data root is set to: {DATA_ROOT}\n"
+                    sys.stderr.write(err_msg)
+                    raise
+            input_files.append(file_path)
+
+    return sorted(input_files)
+
+
+def subset_path(full_path):
+    """This helper exists to reduce
+    the absolute path to a file
+    to just the file name and its
+    parent.
+    TODO: should be codified as part
+    of the template utilities to improve
+    infrastructure portability of active
+    workflows
+    """
+    folder_name = full_path.parent.name
+    file_name = full_path.name
+    subset_path = f"{folder_name}/{file_name}"
+    # if it so happens that the file resides
+    # in a root-level location, strip off
+    # leading slash
+    return subset_path.strip("/")
+
+
 def collect_input_files(sample_sheet):
     """
     The output of this function should
@@ -79,14 +125,25 @@ def collect_input_files(sample_sheet):
         input_hashes = []
         for sub_input in row.input.split(","):
             input_path = pathlib.Path(sub_input).resolve()
-            if input_path.is_file():
-                input_hash = hashlib.sha256(str(input_path).encode("utf-8")).hexdigest()
+            if input_path.is_file() and input_path.name.endswith(".fofn"):
+                fofn_files = _read_input_files_from_fofn(input_path)
+                fofn_hashes = [
+                    hashlib.sha256(
+                        subset_path(fp).encode("utf-8")
+                    ).hexdigest() for fp in fofn_files
+                ]
+                input_files.extend(fofn_files)
+                input_hashes.extend(fofn_hashes)
+            elif input_path.is_file():
+                input_hash = hashlib.sha256(subset_path(input_path).encode("utf-8")).hexdigest()
                 input_files.append(input_path)
                 input_hashes.append(input_hash)
             elif input_path.is_dir():
                 collected_files = _collect_files(input_path)
                 collected_hashes = [
-                    hashlib.sha256(str(f).encode("utf-8")).hexdigest() for f in collected_files
+                    hashlib.sha256(
+                        subset_path(f).encode("utf-8")
+                    ).hexdigest() for f in collected_files
                 ]
                 input_files.extend(collected_files)
                 input_hashes.extend(collected_hashes)

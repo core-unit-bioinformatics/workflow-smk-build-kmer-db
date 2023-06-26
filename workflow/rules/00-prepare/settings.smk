@@ -1,6 +1,13 @@
 
 # CONFIG SETTINGS
 
+# input data file paths read from fofn
+# files may come as a relative path;
+# prepend DATA_ROOT if path does not
+# resolve
+DATA_ROOT = config.get("data_root", "/")
+DATA_ROOT = pathlib.Path(DATA_ROOT).resolve(strict=True)
+
 PROCESS_SINGLETONS = config.get("process_singletons", True)
 PROCESS_TRIOS = config.get("process_trios", True)
 
