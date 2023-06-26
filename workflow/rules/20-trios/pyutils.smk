@@ -3,6 +3,12 @@ import pathlib
 
 def load_reliable_kmer_threshold(tsv_file):
 
+    if isinstance(tsv_file, list):
+        # can happen if expand() is used to
+        # dynamically derive rule input
+        assert len(tsv_file) == 1
+        tsv_file = tsv_file[0]
+
     if FORCE_KMERFREQ_THRESHOLD > -1:
         kmer_t = FORCE_KMERFREQ_THRESHOLD
     elif not pathlib.Path(tsv_file).is_file():
