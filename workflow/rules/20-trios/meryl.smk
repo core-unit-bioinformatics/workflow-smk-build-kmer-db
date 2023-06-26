@@ -2,7 +2,7 @@
 rule meryl_create_inherited_kmer_dbs:
     input:
         child = DIR_PROC.joinpath("10-singles", "meryl", "{child}.k{size_k}.{hpc}.meryl"),
-        child_stats = DIR_RES.joinpath("10-singles", "meryl", "{child}.k{size_k}.{hpc}.meryl-stats.tsv"),
+        child_stats = DIR_RES.joinpath("statistics", "singles", "{child}.k{size_k}.{hpc}.meryl-stats.tsv"),
         parent = lambda wildcards: expand(
             DIR_PROC.joinpath("10-singles", "meryl", "{parent}.k{{size_k}}.{{hpc}}.meryl"),
             parent=MAP_TRIOS[wildcards.child]["mother"] \
@@ -10,7 +10,7 @@ rule meryl_create_inherited_kmer_dbs:
                 else MAP_TRIOS[wildcards.child]["father"]
         ),
         parent_stats = lambda wildcards: expand(
-            DIR_RES.joinpath("10-singles", "meryl", "{parent}.k{{size_k}}.{{hpc}}.meryl-stats.tsv"),
+            DIR_RES.joinpath("statistics", "singles", "{parent}.k{{size_k}}.{{hpc}}.meryl-stats.tsv"),
             parent=MAP_TRIOS[wildcards.child]["mother"] \
                 if wildcards.hap == "maternal" \
                 else MAP_TRIOS[wildcards.child]["father"]
