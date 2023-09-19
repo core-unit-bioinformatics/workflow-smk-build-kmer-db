@@ -1,0 +1,19 @@
+run_meryl: true
+
+discard_kmer_databases: false
+
+# k=31 value is based on Verkko
+# README file in github (2023-09-19);
+# exemplifies run with k=30
+meryl_kmer_size:
+  - 31
+# other common values:
+# k=15 for winnowmap reads-to-ref
+# k=19 for winnowmap contig-to-ref
+
+# count k-mers in homopolymer-
+# compressed space
+# 1 => yes
+# 0 => run both options
+# -1 => no
+meryl_compress: 1
