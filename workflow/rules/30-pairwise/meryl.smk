@@ -26,7 +26,7 @@ rule meryl_pairwise_union:
     shell:
         "meryl union-sum "
             "[ greater-than {params.min_kfreq_db1} {input.db1} ] "
-            "[ greater-than {parmas.min_kfreq_db2} {input.db2} ] "
+            "[ greater-than {params.min_kfreq_db2} {input.db2} ] "
             " output {output.db} "
             "&> {log}"
 
@@ -57,7 +57,7 @@ rule meryl_pairwise_intersect:
     shell:
         "meryl intersect-min "
             "[ greater-than {params.min_kfreq_db1} {input.db1} ] "
-            "[ greater-than {parmas.min_kfreq_db2} {input.db2} ] "
+            "[ greater-than {params.min_kfreq_db2} {input.db2} ] "
             " output {output.db} "
             "&> {log}"
 
