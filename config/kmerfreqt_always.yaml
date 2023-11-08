@@ -1,0 +1,5 @@
+
+# enforce a k-mer frequency
+# threshold for all samples/databases
+force_kmerfreq_threshold: 3
+force_kmerfreq_threshold_always: True

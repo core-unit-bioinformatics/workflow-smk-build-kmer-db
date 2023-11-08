@@ -1,0 +1,9 @@
+
+# enforce a k-mer frequency
+# threshold for samples/databases
+# with a skewed distribution that
+# prohibits deriving a reliable k-mer
+# frequency threshold from the data
+# -> enforce threshold of 3 in this case
+force_kmerfreq_threshold: 3
+force_kmerfreq_threshold_always: False

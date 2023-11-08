@@ -1,0 +1,8 @@
+
+# assume all samples/databases
+# exhibit a well-behaved k-mer
+# frequency distribution and a
+# reliability threshold can thus
+# be derived from the data
+force_kmerfreq_threshold: -1
+force_kmerfreq_threshold_always: False

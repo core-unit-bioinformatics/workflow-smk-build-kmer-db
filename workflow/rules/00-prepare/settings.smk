@@ -22,6 +22,8 @@ DISCARD_KMER_DATABASES = config.get("discard_kmer_databases", False)
 
 FORCE_KMERFREQ_THRESHOLD = config.get("force_kmerfreq_threshold", -1)
 assert isinstance(FORCE_KMERFREQ_THRESHOLD, int)
+FORCE_KMERFREQ_THRESHOLD_ALWAYS = config.get("force_kmerfreq_threshold_always", False)
+assert isinstance(FORCE_KMERFREQ_THRESHOLD_ALWAYS, bool)
 
 # TOOL SETTINGS
 

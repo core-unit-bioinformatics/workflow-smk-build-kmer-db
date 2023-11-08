@@ -29,8 +29,20 @@ input_file_ext:
 # k-mers, which should be done
 # if the workflow input consists
 # of virtually error-free sequence
-# data.
-force_kmerfreq_threshold: -1
+# data. If the 'always' option is
+# set to True, the threshold is
+# enforced for all k-mer databases,
+# even if a reliable k-mer threshold
+# can be inferred from the data
+# (i.e., 'always' overrides any data-derived
+# k-mer frequency threshold)
+# === see shortcut config files:
+# 1) kmerfreqt_always: force threshold
+# 2) kmerfreqt_only_data: never enforce threshold
+# 3) kmerfreqt_only_fail: enforce threshold for fails
+#                         no data-derived threshold
+###force_kmerfreq_threshold: -1
+###force_kmerfreq_threshold_always: False
 
 # this output is used in winnowmap
 extract_high_freq_kmer: false
