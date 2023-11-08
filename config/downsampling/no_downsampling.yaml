@@ -17,4 +17,4 @@
 # Eventually, Snakemake must be executed with
 # downsample_comparisons: 0
 # to finalize the workflow run.
-downsample_comparisons: 0
+downsample_comparisons: 0.
