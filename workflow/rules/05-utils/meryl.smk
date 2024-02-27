@@ -59,6 +59,7 @@ rule meryl_split_statistics_dump:
             "--out-stats {output.stats} --out-hist {output.hist}"
 
 
+localrules: meryl_plot_thresholds
 rule meryl_plot_thresholds:
     input:
         stats = rules.meryl_split_statistics_dump.output.stats,
