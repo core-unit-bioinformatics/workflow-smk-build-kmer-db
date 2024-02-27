@@ -40,9 +40,9 @@ rule meryl_trio_create_inherited_kmer_dbs:
     """
     input:
         child_db = DIR_PROC.joinpath("10-count", "meryl", "{child}.k{size_k}.{hpc}.meryl"),
-        mat_only = rules.meryl_trio_disjoin_parent_kmers.output.mat_only,
-        pat_only = rules.meryl_trio_disjoin_parent_kmers.output.pat_only,
-        shared = rules.meryl_trio_disjoin_parent_kmers.output.shared,
+        mat_only = rules.meryl_trio_disjoin_parent_kmer_dbs.output.mat_only,
+        pat_only = rules.meryl_trio_disjoin_parent_kmer_dbs.output.pat_only,
+        shared = rules.meryl_trio_disjoin_parent_kmer_dbs.output.shared,
     output:
         mat_inherit = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.maternal-inherit.meryl"))),
         pat_inherit = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.paternal-inherit.meryl"))),
