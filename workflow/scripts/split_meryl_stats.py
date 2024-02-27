@@ -5,7 +5,9 @@ import pathlib as pl
 import re as re
 import sys
 
+import numpy as np
 import pandas as pd
+import scipy.signal as scisig
 
 
 HISTOGRAM_HEADER = [
@@ -188,23 +190,30 @@ def determine_reliable_threshold(histogram):
     Args:
         histogram (pandas.DataFrame):
     """
-    select_up_to = min(99, histogram.shape[0])
-    decreasing = histogram.loc[:select_up_to, "num_distinct_kmers"].diff()
-    # first value is NaN in the Pandas implementation
-    decreasing.fillna(-1 * sys.maxsize, inplace=True)
-    inflection_point = None
-    for idx, value in decreasing.items():
-        if value > 0:
-            # idx-1 => select previous k-mer
-            # frequency value, so the thresholding
-            # has to be larger / grt / greater than
-            # this value
-            inflection_point = histogram.loc[idx-1, "frequency"]
-            break
-    # NB: inflection point can still be None,
+
+    dist_peaks, _ = scisig.find_peaks(
+        histogram["num_distinct_kmers"].values,
+        height=(None, None),
+        distance=5
+    )
+    first_peak_index = dist_peaks[0]
+    assert first_peak_index > 0
+    # NB: histogram must be default indexed 0, 1, 2, ...
+    first_peak_freq = int(histogram.loc[first_peak_index, "frequency"])
+
+    hist_subset = histogram["num_distinct_kmers"].values[:first_peak_index]
+    hist_gradient = np.gradient(hist_subset)
+
+    inflection_point_index = None
+    inflection_point_freq = None
+    if any(hist_gradient <= 0):
+        inflection_point_index = hist_gradient[hist_gradient <= 0].argmax()
+        inflection_point_freq = int(histogram.loc[inflection_point_index, "frequency"])
+
+    # NB: inflection point freq. can still be None,
     # e.g., for prefiltered data. That needs
     # to be checked in the calling scope.
-    return inflection_point
+    return inflection_point_freq, first_peak_freq
 
 
 def main():
@@ -244,7 +253,8 @@ def main():
     max_kmer_frequency = df_hist["frequency"].max()
     statistics.append(("kmer_frequency_max", max_kmer_frequency))
 
-    reliable_kmer_threshold = determine_reliable_threshold(df_hist)
+    reliable_kmer_threshold, first_peak_freq = determine_reliable_threshold(df_hist)
+    statistics.append(("dist_first_peak_kmer_freq", first_peak_freq))
     threshold_is_forced = args.forced_threshold > -1
     # if this is a k-mer set that has already been filtered,
     # computing the boundary towards more reliable k-mers

@@ -5,7 +5,7 @@ rule compress_meryl_database:
     form saves about ~50% disk space.
     """
     input:
-        db = lambda wildcards: infer_any_meryl_database_path(
+        db = lambda wildcards: infer_meryl_data_path(
             wildcards.setting, wildcards.db_name
         )
     output:
@@ -15,7 +15,7 @@ rule compress_meryl_database:
     benchmark:
         DIR_RSRC.joinpath("databases", "{setting}", "{db_name}.meryl-compress.txt")
     wildcard_constraints:
-        setting="(singles|trios|pairwise)"
+        setting="(singletons|trios|pairwise)"
     resources:
         mem_mb = lambda wildcards, attempt: 2048 * attempt,
         time_hrs = lambda wildcards, attempt: 1 * max(0, attempt - 1),
