@@ -13,7 +13,7 @@ rule compress_meryl_database:
                 "databases", "{setting}", "{db_name}.meryl.tar.gz"
             )
     benchmark:
-        DIR_RSRC.joinpath("databases", "{setting}", "{db_name}.meryl-compress.txt")
+        DIR_RSRC.joinpath("databases", "{setting}", "{db_name}.meryl-compress.rsrc")
     wildcard_constraints:
         setting="(singletons|trios|pairwise)"
     resources:
