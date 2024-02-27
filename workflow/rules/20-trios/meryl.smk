@@ -39,7 +39,7 @@ rule meryl_trio_create_inherited_kmer_dbs:
     to the first database (= the child)
     """
     input:
-        child_db = DIR_PROC.joinpath("10-count", "meryl", "{child}.k{size_k}.{hpc}.meryl"),
+        child_db = DIR_PROC.joinpath("10-count", "meryl", "10-build", "{child}.k{size_k}.{hpc}.meryl"),
         mat_only = rules.meryl_trio_disjoin_parent_kmer_dbs.output.mat_only,
         pat_only = rules.meryl_trio_disjoin_parent_kmer_dbs.output.pat_only,
         shared = rules.meryl_trio_disjoin_parent_kmer_dbs.output.shared,
