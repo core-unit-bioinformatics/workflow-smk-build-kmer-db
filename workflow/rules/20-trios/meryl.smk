@@ -100,14 +100,14 @@ rule meryl_run_trios:
         stats = expand(
             DIR_RES.joinpath("statistics", "trios", "{sample}.k{size_k}.{hpc}.{kmer_set}.meryl-stats.tsv"),
             sample=CHILDREN,
-            kmer_set=["maternal-hapmer", "paternal-hapmer", "parental-hapmer"],
+            kmer_set=["maternal-inherit", "paternal-inherit", "parental-inherit"],
             size_k=config["meryl_kmer_size"],
             hpc=MERYL_COMPRESS_WILDCARD_VALUES,
         ),
         plots = expand(
             DIR_RES.joinpath("plots", "trios", "{sample}.k{size_k}.{hpc}.{kmer_set}.meryl-thresholds.pdf"),
             sample=CHILDREN,
-            kmer_set=["maternal-hapmer", "paternal-hapmer", "parental-hapmer"],
+            kmer_set=["maternal-inherit", "paternal-inherit", "parental-inherit"],
             size_k=config["meryl_kmer_size"],
             hpc=MERYL_COMPRESS_WILDCARD_VALUES,
 
