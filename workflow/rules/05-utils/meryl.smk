@@ -55,7 +55,7 @@ rule meryl_split_statistics_dump:
     shell:
         "{params.script} --meryl-stats {input.stats_dump} "
             "--forced-kmerfreq-threshold {params.forced_thres} "
-            "{params.threshold_warning}"
+            "{params.threshold_warning} "
             "--out-stats {output.stats} --out-hist {output.hist}"
 
 

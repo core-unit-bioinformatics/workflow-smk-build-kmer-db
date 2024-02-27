@@ -6,7 +6,7 @@ rule compress_meryl_database:
     """
     input:
         db = lambda wildcards: infer_meryl_data_path(
-            wildcards.setting, wildcards.db_name
+            wildcards.setting, wildcards.db_name, "db", True
         )
     output:
         tar = DIR_RES.joinpath(

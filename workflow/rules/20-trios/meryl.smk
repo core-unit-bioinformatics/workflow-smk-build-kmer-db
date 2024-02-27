@@ -70,7 +70,7 @@ rule meryl_trio_create_hapmer_dbs:
     output:
         hapmer = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "30-filter", "{child}.k{size_k}.{hpc}.{kmer_set}-hapmer.meryl"))),
     wildcard_constraints:
-        kmer_set=("(maternal|paternal|parental)")
+        kmer_set="(maternal|paternal|parental)"
     threads: 1
     resources:
         mem_mb = lambda wildcards, attempt: 8192 * attempt,
