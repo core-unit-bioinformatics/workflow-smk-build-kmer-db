@@ -70,7 +70,7 @@ rule meryl_plot_thresholds:
     conda:
         DIR_ENVS.joinpath("pyplot.yaml")
     params:
-        script=find_script("plot_meryl_thresholds")
-        acc_out=lambda wildcards, output: register_result(output),
+        script=find_script("plot_meryl_thresholds"),
+        acc_out=lambda wildcards, output: register_result(output)
     shell:
         "{params.script} -hist {input.hist} -stats {input.stats} -pdf {output.pdf}"
