@@ -59,7 +59,6 @@ rule meryl_split_statistics_dump:
             "--out-stats {output.stats} --out-hist {output.hist}"
 
 
-localrules: meryl_plot_thresholds
 rule meryl_plot_thresholds:
     input:
         stats = rules.meryl_split_statistics_dump.output.stats,
@@ -69,8 +68,9 @@ rule meryl_plot_thresholds:
             "plots", "{setting}", "{db_name}.meryl-thresholds.pdf"
         )
     conda:
-        DIR_ENVS.joinpath("pyscript.yaml")
+        DIR_ENVS.joinpath("pyplot.yaml")
     params:
+        script=find_script("plot_meryl_thresholds")
         acc_out=lambda wildcards, output: register_result(output),
     shell:
-        "exit 1"
+        "{params.script} -hist {input.hist} -stats {input.stats} -pdf {output.pdf}"

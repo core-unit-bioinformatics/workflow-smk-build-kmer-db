@@ -1,0 +1,7 @@
+name: pyplot
+dependencies:
+  - Python=3.10.*
+  - pip
+  - pandas=2.2.*
+  - numpy=1.26.*
+  - matplotlib=3.8.*
