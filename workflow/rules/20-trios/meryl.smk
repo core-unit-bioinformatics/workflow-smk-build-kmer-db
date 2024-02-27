@@ -58,7 +58,7 @@ rule meryl_trio_create_inherited_kmer_dbs:
             " && "
         "meryl intersect {input.child_db} {input.pat_only} output {output.pat_inherit} &> {log}"
             " && "
-        "meryl intersect {input.child_db} {input.shared} output {params.shared_inherit} &> {log}"
+        "meryl intersect {input.child_db} {input.shared} output {output.shared_inherit} &> {log}"
 
 
 rule meryl_trio_create_hapmer_dbs:
