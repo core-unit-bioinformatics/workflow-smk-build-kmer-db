@@ -5,18 +5,12 @@ if RUN_MERYL:
 
     if PROCESS_SINGLETONS:
         MERYL_WORKFLOW_OUTPUT.extend(
-            rules.meryl_run_singles.input.dbs
-        )
-        MERYL_WORKFLOW_OUTPUT.extend(
-            rules.meryl_run_singles.input.stats
+            rules.meryl_run_singletons.input
         )
 
     if CHILDREN and PROCESS_TRIOS:
         MERYL_WORKFLOW_OUTPUT.extend(
-            rules.meryl_run_trios.input.dbs
-        )
-        MERYL_WORKFLOW_OUTPUT.extend(
-            rules.meryl_run_trios.input.stats
+            rules.meryl_run_trios.input
         )
 
     # PAIRWISE mode needs refactoring
