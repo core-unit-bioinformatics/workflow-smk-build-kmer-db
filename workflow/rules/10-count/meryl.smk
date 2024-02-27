@@ -113,7 +113,7 @@ if DISCARD_KMER_DATABASES:
     _SINGLETONS_RESULT_MERYL_DB = []
 
 
-rule meryl_run_singles:
+rule meryl_run_singletons:
     input:
         dbs = _SINGLETONS_RESULT_MERYL_DB,
         stats = expand(
