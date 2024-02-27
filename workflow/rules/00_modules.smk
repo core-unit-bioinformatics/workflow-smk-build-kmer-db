@@ -16,6 +16,7 @@ include: "10-count/meryl.smk"
 include: "20-trios/pyutils.smk"
 include: "20-trios/meryl.smk"
 
+# PAIRWISE mode needs refactoring
 #include: "30-pairwise/pyutils.smk"
 #include: "30-pairwise/meryl.smk"
 
