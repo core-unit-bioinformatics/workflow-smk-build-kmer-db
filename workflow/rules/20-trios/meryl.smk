@@ -12,7 +12,11 @@ rule meryl_trio_disjoin_parent_kmer_dbs:
     output:
         mat_only = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "10-disjoin", "{child}.k{size_k}.{hpc}.maternal-only.meryl"))),
         pat_only = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "10-disjoin", "{child}.k{size_k}.{hpc}.paternal-only.meryl"))),
-        shared = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "10-disjoin", "{child}.k{size_k}.{hpc}.parental-shared.meryl"))),
+        shared = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "10-disjoin", "{child}.k{size_k}.{hpc}.parental-shared.meryl")))
+    log:
+        DIR_LOG.joinpath("20-trios", "meryl", "10-disjoin", "{child}.k{size_k}.{hpc}.disjoin-parent-dbs.meryl.log")
+    benchmark:
+        DIR_RSRC.joinpath("20-trios", "meryl", "10-disjoin", "{child}.k{size_k}.{hpc}.disjoin-parent-dbs.meryl.rsrc")
     threads: 1
     resources:
         mem_mb = lambda wildcards, attempt: 8192 * attempt,
@@ -46,7 +50,11 @@ rule meryl_trio_create_inherited_kmer_dbs:
     output:
         mat_inherit = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.maternal-inherit.meryl"))),
         pat_inherit = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.paternal-inherit.meryl"))),
-        shared_inherit = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.parental-inherit.meryl"))),
+        shared_inherit = temp(directory(DIR_PROC.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.parental-inherit.meryl")))
+    log:
+        DIR_LOG.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.inherit-parent-dbs.meryl.log")
+    benchmark:
+        DIR_RSRC.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.inherit-parent-dbs.meryl.rsrc")
     threads: 1
     resources:
         mem_mb = lambda wildcards, attempt: 8192 * attempt,
