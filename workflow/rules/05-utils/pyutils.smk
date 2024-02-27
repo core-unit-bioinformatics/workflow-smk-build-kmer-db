@@ -8,9 +8,9 @@ def infer_meryl_data_path(setting, db_name, which_output=None):
     assert setting in ["singletons", "trios", "pairwise"]
 
     if setting == "singletons":
-        proc_base = DIR_PROC.joinpath("10-count", "meryl", "20-filter")
+        proc_base = DIR_PROC.joinpath("10-count", "meryl", "10-build")
     elif setting == "trios":
-        proc_base = DIR_PROC.joinpath("20-trios", "meryl", "30-filter")
+        proc_base = DIR_PROC.joinpath("20-trios", "meryl", "20-inherit")
     elif setting == "pairwise":
         raise NotImplementedError()
     else:

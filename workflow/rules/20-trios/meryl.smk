@@ -64,7 +64,7 @@ rule meryl_trio_create_inherited_kmer_dbs:
 rule meryl_trio_create_hapmer_dbs:
     input:
         stats = DIR_RES.joinpath(
-            "statistics", "trios", "{child}.k{size_k}.{hpc}.{kmer_set}-hapmer.meryl-stats.tsv"
+            "statistics", "trios", "{child}.k{size_k}.{hpc}.{kmer_set}-inherit.meryl-stats.tsv"
         ),
         inherit = DIR_PROC.joinpath("20-trios", "meryl", "20-inherit", "{child}.k{size_k}.{hpc}.{kmer_set}-inherit.meryl"),
     output:
