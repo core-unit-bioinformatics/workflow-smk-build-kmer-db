@@ -35,9 +35,7 @@ rule meryl_union_part_file_dbs:
                 part=MAP_SAMPLE_TO_PART_IDS[wildcards.sample]
             )
     output:
-        db = temp(directory(
-            DIR_PROC.joinpath("10-count", "meryl", "10-build", "{sample}.k{size_k}.{hpc}.meryl")
-        ))
+        db = DIR_PROC.joinpath("10-count", "meryl", "10-build", "{sample}.k{size_k}.{hpc}.meryl")
     log:
         DIR_LOG.joinpath("10-count", "meryl", "10-build", "{sample}.k{size_k}.{hpc}.meryl.log")
     benchmark:
@@ -46,8 +44,8 @@ rule meryl_union_part_file_dbs:
         sample = CONSTRAINT_SAMPLES_MULTI_INPUT
     threads: CPU_MEDIUM
     resources:
-        mem_mb = lambda wildcards, attempt: 32768 * attempt,
-        mem_gb = lambda wildcards, attempt: 32 * attempt,
+        mem_mb = lambda wildcards, attempt: 49152 * attempt,
+        mem_gb = lambda wildcards, attempt: 48 * attempt,
         time_hrs = lambda wildcards, attempt: 1 * attempt,
     conda:
         DIR_ENVS.joinpath("meryl.yaml")
@@ -59,9 +57,7 @@ rule meryl_build_kmer_db:
     input:
         seq = lambda wildcards: MAP_SAMPLE_TO_INPUT_FILE[(wildcards.sample, None)]
     output:
-        db = temp(directory(
-            DIR_PROC.joinpath("10-count", "meryl", "10-build", "{sample}.k{size_k}.{hpc}.meryl")
-        ))
+        db = DIR_PROC.joinpath("10-count", "meryl", "10-build", "{sample}.k{size_k}.{hpc}.meryl")
     log:
         DIR_LOG.joinpath("10-count", "meryl", "10-build", "{sample}.k{size_k}.{hpc}.meryl.log")
     benchmark:
