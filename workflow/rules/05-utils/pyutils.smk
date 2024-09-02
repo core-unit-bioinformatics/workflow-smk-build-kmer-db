@@ -18,7 +18,22 @@ def infer_meryl_data_path(setting, db_name, which_output=None, final=False):
         else:
             proc_base = DIR_PROC.joinpath("20-trios", "meryl", "20-inherit")
     elif setting == "pairwise":
-        raise NotImplementedError()
+        # 2024-09-02
+        # this is a temporary debug --- comparing by file requires
+        # looking for the 'part' DBs, which requires a more complex
+        # path inference
+        if COMPARE_PAIRWISE_BY_FILE:
+            errm_msg = "K-mer database comparisons by file are currently not supported"
+            raise NotImplementedError(err_msg)
+        assert COMPARE_PAIRWISE_BY_SAMPLE
+        if "1-or-2" in db_name:
+            proc_base = DIR_PROC.joinpath("30-pairwise", "meryl", "union-sum")
+        elif "1-and-2" in db_name:
+            proc_base = DIR_PROC.joinpath("30-pairwise", "meryl", "intersect-min")
+        elif "1-not-2" in db_name or "2-not-1" in db_name:
+            proc_base = DIR_PROC.joinpath("30-pairwise", "meryl", "difference")
+        else:
+            raise ValueError(f"Cannot process setting 'pairwise' with database {db_name}")
     else:
         raise RuntimeError(f"Should not happen: {setting}")
 

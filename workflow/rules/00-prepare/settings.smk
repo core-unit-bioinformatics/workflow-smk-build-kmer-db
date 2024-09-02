@@ -12,6 +12,13 @@ PROCESS_SINGLETONS = config.get("process_singletons", True)
 PROCESS_TRIOS = config.get("process_trios", True)
 
 COMPARE_PAIRWISE_BY_FILE = config.get("compare_pairwise_by_file", False)
+# 2024-09-02
+# temporary debug setting
+# comparisons by file are currently not support
+if COMPARE_PAIRWISE_BY_FILE:
+    logerr("k-mer database comparisons by file are currently not supported - deactivating switch")
+    COMPARE_PAIRWISE_BY_FILE = False
+
 COMPARE_PAIRWISE_BY_SAMPLE = config.get("compare_pairwise_by_sample", False)
 
 DOWNSAMPLE_COMPARISONS = config.get("downsample_comparisons", 0.)
