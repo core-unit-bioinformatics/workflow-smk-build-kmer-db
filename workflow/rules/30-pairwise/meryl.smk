@@ -19,7 +19,7 @@ rule meryl_pairwise_union:
     conda:
         DIR_ENVS.joinpath("meryl.yaml")
     shell:
-        "meryl union-sum [ {input.db1} {input.db2} ] output {output.db} &> {log}"
+        "meryl union-sum {input.db1} {input.db2} output {output.db} &> {log}"
 
 
 rule meryl_pairwise_intersect:
@@ -41,7 +41,7 @@ rule meryl_pairwise_intersect:
     conda:
         DIR_ENVS.joinpath("meryl.yaml")
     shell:
-        "meryl intersect-min [ {input.db1} {input.db2} ] output {output.db} &> {log}"
+        "meryl intersect-min {input.db1} {input.db2} output {output.db} &> {log}"
 
 
 rule meryl_pairwise_difference:
@@ -67,15 +67,9 @@ rule meryl_pairwise_difference:
     conda:
         DIR_ENVS.joinpath("meryl.yaml")
     shell:
-        "meryl difference "
-            "[ {input.db1} {input.db2} ] "
-            " output {output.db12} "
-            "&> {log}"
+        "meryl difference {input.db1} {input.db2} output {output.db12} &> {log}"
             " && "
-        "meryl difference "
-            "[ {input.db2} {input.db1} ] "
-            " output {output.db21} "
-            "&>> {log}"
+        "meryl difference {input.db2} {input.db1} output {output.db21} &>> {log}"
 
 
 ##########################
