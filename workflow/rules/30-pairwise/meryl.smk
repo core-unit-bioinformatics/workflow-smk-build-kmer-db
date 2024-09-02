@@ -2,8 +2,8 @@
 
 rule meryl_pairwise_union:
     input:
-        db1 = lambda wildcards: infer_meryl_data_path("singleton", wildcards.db1, final=True),
-        db2 = lambda wildcards: infer_meryl_data_path("singleton", wildcards.db2, final=True),
+        db1 = lambda wildcards: infer_meryl_data_path("singletons", wildcards.db1, final=True),
+        db2 = lambda wildcards: infer_meryl_data_path("singletons", wildcards.db2, final=True),
     output:
         db = temp(directory(
             DIR_PROC.joinpath("30-pairwise", "meryl", "union-sum",
@@ -24,8 +24,8 @@ rule meryl_pairwise_union:
 
 rule meryl_pairwise_intersect:
     input:
-        db1 = lambda wildcards: infer_meryl_data_path("singleton", wildcards.db1, final=True),
-        db2 = lambda wildcards: infer_meryl_data_path("singleton", wildcards.db2, final=True),
+        db1 = lambda wildcards: infer_meryl_data_path("singletons", wildcards.db1, final=True),
+        db2 = lambda wildcards: infer_meryl_data_path("singletons", wildcards.db2, final=True),
     output:
         db = temp(directory(
             DIR_PROC.joinpath("30-pairwise", "meryl", "intersect-min",
@@ -46,8 +46,8 @@ rule meryl_pairwise_intersect:
 
 rule meryl_pairwise_difference:
     input:
-        db1 = lambda wildcards: infer_meryl_data_path("singleton", wildcards.db1, final=True),
-        db2 = lambda wildcards: infer_meryl_data_path("singleton", wildcards.db2, final=True),
+        db1 = lambda wildcards: infer_meryl_data_path("singletons", wildcards.db1, final=True),
+        db2 = lambda wildcards: infer_meryl_data_path("singletons", wildcards.db2, final=True),
     output:
         db12 = temp(directory(
             DIR_PROC.joinpath("30-pairwise", "meryl", "difference",
