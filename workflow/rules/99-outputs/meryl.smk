@@ -29,3 +29,7 @@ if RUN_MERYL:
         MERYL_WORKFLOW_OUTPUT.extend(
             rules.meryl_run_pairwise_by_sample.input.stats
         )
+
+        MERYL_WORKFLOW_OUTPUT.extend(
+            rules.plot_jaccard_similarity.output.pdf
+        )
