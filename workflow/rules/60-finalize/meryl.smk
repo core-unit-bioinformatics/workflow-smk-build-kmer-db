@@ -47,7 +47,7 @@ rule plot_jaccard_similarity:
                 MERYL_KMER_VALUES,
                 MERYL_COMPRESS_WILDCARD_VALUES
             ),
-            db_op=["1-or-2", "1-and-2"]
+            db_op=["1-or-2", "1-and-2"],
             allow_missing=True
         )
     output:
