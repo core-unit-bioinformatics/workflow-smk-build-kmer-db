@@ -202,13 +202,24 @@ def determine_reliable_threshold(histogram):
     first_peak_freq = int(histogram.loc[first_peak_index, "frequency"])
 
     hist_subset = histogram["num_distinct_kmers"].values[:first_peak_index]
-    hist_gradient = np.gradient(hist_subset)
-
-    inflection_point_index = None
-    inflection_point_freq = None
-    if any(hist_gradient <= 0):
-        inflection_point_index = hist_gradient[hist_gradient <= 0].argmax()
-        inflection_point_freq = int(histogram.loc[inflection_point_index, "frequency"])
+    try:
+        hist_gradient = np.gradient(hist_subset)
+    except ValueError:
+        assert first_peak_index < 2
+        min_frequency = histogram["frequency"].iloc[0]
+        if min_frequency < 2:
+            # this seems too suspicious for pre-filtered
+            # data, so re-raise to trigger inspection
+            raise
+        else:
+            inflection_point_index = None
+            inflection_point_freq = None
+    else:
+        inflection_point_index = None
+        inflection_point_freq = None
+        if any(hist_gradient <= 0):
+            inflection_point_index = hist_gradient[hist_gradient <= 0].argmax()
+            inflection_point_freq = int(histogram.loc[inflection_point_index, "frequency"])
 
     # NB: inflection point freq. can still be None,
     # e.g., for prefiltered data. That needs
