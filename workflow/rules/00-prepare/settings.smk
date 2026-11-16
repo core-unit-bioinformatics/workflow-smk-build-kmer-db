@@ -59,3 +59,25 @@ MERYL_COMPRESS_WILDCARD_VALUES = \
 
 MERYL_KMER_VALUES = config["meryl_kmer_size"]
 assert all(isinstance(value, int) for value in MERYL_KMER_VALUES)
+
+
+#======================
+# YAK k-mer databases
+#======================
+
+RUN_YAK = config.get("run_yak", False)
+assert isinstance(RUN_YAK, bool)
+
+# hifiasm recommends k=31 (yak default)
+YAK_KMER_VALUES = config.get("yak_kmer_size", [31])
+if isinstance(YAK_KMER_VALUES, int):
+    YAK_KMER_VALUES = [YAK_KMER_VALUES]
+assert all(isinstance(value, int) for value in YAK_KMER_VALUES)
+
+# size of the Bloom filter in log2(bits);
+# 0 deactivates the Bloom filter (singleton
+# k-mers are then kept)
+YAK_BLOOM_FILTER_BITS = config.get("yak_bloom_filter_bits", 37)
+assert isinstance(YAK_BLOOM_FILTER_BITS, int)
+assert 0 <= YAK_BLOOM_FILTER_BITS < 64
+
