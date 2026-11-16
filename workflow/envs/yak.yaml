@@ -1,0 +1,4 @@
+name: yak
+dependencies:
+  - yak=0.1
+  - gzip
