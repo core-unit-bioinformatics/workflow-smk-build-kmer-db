@@ -121,7 +121,7 @@ rule meryl_run_singletons:
         plots = expand(
             DIR_RES.joinpath("plots", "singletons", "{sample}.k{size_k}.{hpc}.meryl-thresholds.pdf"),
             sample=SAMPLES,
-            size_k=config["meryl_kmer_size"],
+            size_k=MERYL_KMER_VALUES,
             hpc=MERYL_COMPRESS_WILDCARD_VALUES,
 
         )
