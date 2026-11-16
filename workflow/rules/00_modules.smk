@@ -11,6 +11,7 @@ include: "00-prepare/sample_table.smk"
 include: "05-utils/pyutils.smk"
 include: "05-utils/meryl.smk"
 
+include: "10-count/pyutils.smk"
 include: "10-count/meryl.smk"
 include: "10-count/yak.smk"
 
