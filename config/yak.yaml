@@ -1,0 +1,6 @@
+
+run_yak: true
+
+# k=31 as per hifiasm github readme
+yak_kmer_size:
+  - 31
