@@ -95,7 +95,7 @@ _TRIOS_RESULT_MERYL_DB = expand(
     DIR_RES.joinpath("databases", "trios", "{sample}.k{size_k}.{hpc}.{kmer_set}.meryl.tar.gz"),
     sample=CHILDREN,
     kmer_set=["maternal-hapmer", "paternal-hapmer", "parental-hapmer"],
-    size_k=config["meryl_kmer_size"],
+    size_k=MERYL_KMER_VALUES,
     hpc=MERYL_COMPRESS_WILDCARD_VALUES,
 )
 if DISCARD_KMER_DATABASES:
@@ -109,14 +109,14 @@ rule meryl_run_trios:
             DIR_RES.joinpath("statistics", "trios", "{sample}.k{size_k}.{hpc}.{kmer_set}.meryl-stats.tsv"),
             sample=CHILDREN,
             kmer_set=["maternal-inherit", "paternal-inherit", "parental-inherit"],
-            size_k=config["meryl_kmer_size"],
+            size_k=MERYL_KMER_VALUES,
             hpc=MERYL_COMPRESS_WILDCARD_VALUES,
         ),
         plots = expand(
             DIR_RES.joinpath("plots", "trios", "{sample}.k{size_k}.{hpc}.{kmer_set}.meryl-thresholds.pdf"),
             sample=CHILDREN,
             kmer_set=["maternal-inherit", "paternal-inherit", "parental-inherit"],
-            size_k=config["meryl_kmer_size"],
+            size_k=MERYL_KMER_VALUES,
             hpc=MERYL_COMPRESS_WILDCARD_VALUES,
 
         )
