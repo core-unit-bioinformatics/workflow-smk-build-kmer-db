@@ -5,7 +5,10 @@ import re
 
 import pandas
 
-SAMPLES = None
+# this has been superseeded by the most
+# recent version of the workflow template code
+# SAMPLES = None
+
 MAP_SAMPLE_TO_INPUT_FILE = None
 MAP_SAMPLE_TO_PART_IDS = None
 
@@ -16,15 +19,7 @@ CHILDREN = None
 MAP_TRIOS = None
 
 
-def process_sample_sheet():
-
-    SAMPLE_SHEET_FILE = pathlib.Path(config["samples"]).resolve(strict=True)
-    SAMPLE_SHEET = pandas.read_csv(
-        SAMPLE_SHEET_FILE,
-        sep="\t",
-        header=0,
-        comment="#"
-    )
+def process_sample_sheet(SAMPLE_SHEET):
 
     # step 1: each row is a sample,
     # just collect the input files
@@ -32,8 +27,6 @@ def process_sample_sheet():
     all_samples = single_input_samples.union(multi_input_samples)
     assert len(all_samples) == SAMPLE_SHEET.shape[0]
 
-    global SAMPLES
-    SAMPLES = sorted(all_samples)
     global MAP_SAMPLE_TO_INPUT_FILE
     MAP_SAMPLE_TO_INPUT_FILE = sample_input
     global MAP_SAMPLE_TO_PART_IDS
@@ -124,7 +117,7 @@ def collect_input_files(sample_sheet):
     for row in sample_sheet.itertuples():
         input_files = []
         input_hashes = []
-        for sub_input in row.input.split(","):
+        for sub_input in row.input_path.split(","):
             input_path = pathlib.Path(sub_input).resolve()
             if input_path.is_file() and input_path.name.endswith(".fofn"):
                 fofn_files = _read_input_files_from_fofn(input_path)
@@ -169,6 +162,10 @@ def collect_family_infos(sample_sheet):
     proper_trios = collections.defaultdict(dict)
 
     for row in sample_sheet.itertuples():
+        # TODO
+        # the template needs to have built-in support for
+        # optional columns in the sample sheet and then normalizes
+        # the names; similar to mandatory column names...
         if not hasattr(row, "family") or pandas.isnull(row.family):
             continue
         families[row.family][row.member] = row.sample
@@ -203,4 +200,6 @@ def _collect_files(folder):
         raise ValueError(f"No input files found underneath {folder}")
     return all_files
 
-process_sample_sheet()
+# the SAMPLE_SHEET object is read/created in a generic
+# manner in the respective template module: 10_sample_sheet.smk
+process_sample_sheet(SAMPLE_SHEET)
