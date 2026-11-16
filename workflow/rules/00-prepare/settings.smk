@@ -57,7 +57,7 @@ MAP_MERYL_COMPRESS_CONFIG_OPTION = {
 MERYL_COMPRESS_WILDCARD_VALUES = \
     MAP_MERYL_COMPRESS_CONFIG_OPTION[MERYL_COMPRESS_CONFIG_OPTION]
 
-MERYL_KMER_VALUES = config["meryl_kmer_size"]
+MERYL_KMER_VALUES = config.get("meryl_kmer_size", [21])
 assert all(isinstance(value, int) for value in MERYL_KMER_VALUES)
 
 
