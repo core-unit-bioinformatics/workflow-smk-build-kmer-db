@@ -20,26 +20,17 @@ class ConfigOptions:
     cpu_low: CFG_PARAM = CFG_PARAM(
         "cpu_low",
         2,
-        (
-            "Number of CPU cores (threads) to use"
-            " for small jobs. Default: 2"
-        )
+        ("Number of CPU cores (threads) to use" " for small jobs. Default: 2"),
     )
     cpu_medium: CFG_PARAM = CFG_PARAM(
         "cpu_medium",
         4,
-        (
-            "Number of CPU cores (threads) to use"
-            " for medium-sized jobs. Default: 4"
-        )
+        ("Number of CPU cores (threads) to use" " for medium-sized jobs. Default: 4"),
     )
     cpu_high: CFG_PARAM = CFG_PARAM(
         "cpu_high",
         6,
-        (
-            "Number of CPU cores (threads) to use"
-            " for large jobs. Default: 6"
-        )
+        ("Number of CPU cores (threads) to use" " for large jobs. Default: 6"),
     )
     cpu_max: CFG_PARAM = CFG_PARAM(
         "cpu_max",
@@ -51,7 +42,38 @@ class ConfigOptions:
             " number of CPU core available on a single"
             " server in the targeted compute"
             " infrastructure. Default: 8"
-        )
+        ),
+    )
+    mem_max: CFG_PARAM = CFG_PARAM(
+        "mem_max",
+        "240g",
+        (
+            "Specify the maximal memory that is available"
+            " on the current infrastructure. This number"
+            " is first interpreted as a string with a suffix"
+            " of common scale abbreviations"
+            " (i.e. M/m/mb or G/g/gb etc.). This string is"
+            " then internally processed and turned into"
+            " an actual number representing the upper limit."
+        ),
+    )
+    mem_common: CFG_PARAM = CFG_PARAM(
+        "mem_common",
+        "16g",
+        (
+            "Specify the amount of memory that should be"
+            "commonly [as default] used on the current"
+            " infrastructure. This information is a mere"
+            " convenience/shorthand for workflow development"
+            " that can be used as a reasonable placeholder"
+            " until an appropriate memory scaling beahvior"
+            " or limit has been identified for the respective"
+            " rule. This number is first interpreted as a "
+            " string with a suffix of common scale abbreviations"
+            " (i.e. M/m/mb or G/g/gb etc.). This string is"
+            " then internally processed and turned into"
+            " an actual number / numerical value."
+        ),
     )
     devmode: CFG_PARAM = CFG_PARAM(
         "devmode",
@@ -67,10 +89,10 @@ class ConfigOptions:
         "env_module_singularity",
         "Singularity",
         (
-            "If the Singularity executable has to"
-            " be loaded via an ENV module (common"
-            " on HPC infrastructure), specify the"
-            " name of the module to load."
+            "If the Singularity/Apptainer executable"
+            " has to be loaded via an ENV module"
+            " (common on HPC infrastructure),"
+            " specify the name of the module to load."
             " Default: Singularity"
         ),
     )
@@ -82,7 +104,7 @@ class ConfigOptions:
             " printing the help info for certain"
             " config options that are irrelevant"
             " to end users. [Dev-only parameter]"
-        )
+        ),
     )
     resetacc: CFG_PARAM = CFG_PARAM(
         "resetacc",
@@ -114,7 +136,7 @@ class ConfigOptions:
     )
     suffix: CFG_PARAM = CFG_PARAM(
         "suffix",
-        "",
+        "derive",
         (
             "Specify a suffix to append to the pipeline"
             " manifest output file and the run config"
@@ -126,7 +148,7 @@ class ConfigOptions:
             " all dots and underscores with minus."
             " [Example]: sample.sheet_123.tsv => sample-sheet-123"
             " [Example]: Batch-A.098 => Batch-A-098"
-            " Default: <empty>"
+            " Default: derive"
         ),
     )
     refcon: CFG_PARAM = CFG_PARAM(

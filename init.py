@@ -8,14 +8,13 @@ import pathlib as pl
 import subprocess as sp
 import sys
 
-
 # parent of the script's parent is one level above
 # the repository location
 DEFAULT_ROOT = pl.Path(__file__).resolve().parent.parent
 
 DEFAULT_CONST_MODULE = pl.Path(__file__).parent
 DEFAULT_CONST_MODULE = DEFAULT_CONST_MODULE.joinpath(
-    "workflow", "rules", "commons", "10_constants.smk"
+    "workflow", "rules", "commons", "10-constants", "20_const_structs.smk"
 )
 DEFAULT_CONST_MODULE.resolve(strict=True)
 
@@ -42,7 +41,14 @@ def create_execution_environment(repo_folder, project_folder, conda_env_name):
     """
 
     logger = logging.getLogger(__name__)
-    check_executables = ["mamba", "conda"]
+    # 2025-08-01
+    # change here: recent versions of conda use
+    # libmamba under the hood / rely on faster
+    # re-implementations of the core algorithms,
+    # which is why, e.g., also Snakemake dropped
+    # support for mamba. Prioritize conda here for
+    # the same reason
+    check_executables = ["conda", "mamba"]
     use_executable = None
     for executable in check_executables:
         try:
@@ -74,12 +80,14 @@ def create_execution_environment(repo_folder, project_folder, conda_env_name):
     )
     env_path = project_folder.joinpath(env_prefix)
     logger.debug("Setting up the Conda environment may take a while...")
+    # 2025-08-01
+    # change here: conda v24.11.3 and mamba v1.5.12
+    # no longer support the '--force' option
     call_args = [
         use_executable,
         "env",
         "create",
         "--quiet",
-        "--force",
         "-f",
         str(yaml_file),
         "-p",
@@ -89,9 +97,12 @@ def create_execution_environment(repo_folder, project_folder, conda_env_name):
         proc_out = sp.run(call_args, shell=False, capture_output=True, check=False)
         proc_out.check_returncode()  # check after to get stdout/stderr
     except sp.CalledProcessError as spe:
+        # NB: subprocess.run is executed w/ check=False and thus does not raise
+        # hence, proc_out cannot be unbound but Pylance does not recognize that;
+        # selective type: ignore
         logger.error(f"Could not create Snakemake execution environment: {spe}")
-        logger.error(f"\n=== STDOUT ===\n{proc_out.stdout.decode('utf-8')}")
-        logger.error(f"\n=== STDERR ===\n{proc_out.stderr.decode('utf-8')}")
+        logger.error(f"\n=== STDOUT ===\n{proc_out.stdout.decode('utf-8')}")  # type: ignore
+        logger.error(f"\n=== STDERR ===\n{proc_out.stderr.decode('utf-8')}")  # type: ignore
         raise
     return None
 
@@ -247,13 +258,10 @@ def _extract_directory_paths(module_path):
     Args:
         module_path (pathlib.Path): Path to Snakemake constants module
     """
-    # import needed for eval() of Paths
-    import pathlib
-
     logger = logging.getLogger(__name__)
 
     paths = dict()
-    ignore = None
+    ignore = []
     extracting = False
     logger.debug("Evaluating content of constants module")
     with open(module_path, "r") as module:
@@ -270,16 +278,25 @@ def _extract_directory_paths(module_path):
                 ignore = eval(line.strip().split("=")[-1])
             elif extracting:
                 path_name = line.strip().split(":")[0].strip()
-                path = eval(line.strip().split("=")[-1])
-                paths[path_name] = path
+                # why the stripping of pathlib?
+                # eval() would require an import of pathlib (no alias),
+                # hence eval() to str or tuple of str and then turn
+                # into pathlib.Path later
+                path_components = (
+                    line.strip().split("=")[-1].strip().strip("pathlib.Path")
+                )
+                path_components = eval(path_components)
+                try:
+                    paths[path_name] = pl.Path(path_components)
+                except TypeError:
+                    paths[path_name] = pl.Path(*path_components)
             else:
                 pass
 
     logger.debug(
-        f"Extracted a total of {len(paths)} paths, {len(ignore)}"
-        " of which to be ignored"
+        f"Extracted a total of {len(paths)} paths, {len(ignore)} of which to be ignored"
     )
-    assert ignore is not None
+    assert len(ignore) > 0
     return paths, ignore
 
 

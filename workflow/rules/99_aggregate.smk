@@ -7,5 +7,8 @@ in the main Snakefile
 """
 
 WORKFLOW_OUTPUT = []
-
-WORKFLOW_OUTPUT.extend(MERYL_WORKFLOW_OUTPUT)
+# Example for extending the output
+# with output from another module
+# (remember to include that module
+# in 00_modules.smk):
+# WORKFLOW_OUTPUT.extend(MODULE_OUTPUT)

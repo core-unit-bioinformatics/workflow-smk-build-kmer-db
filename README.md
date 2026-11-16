@@ -4,3 +4,29 @@ A simple workflow to build sequence k-mer databases
 using common tools such as `meryl` or `yak`. The output
 of this workflow is generally expected to be used as input
 to another workflow doing something more useful.
+
+## Required software environment
+
+Standardized workflows are designed with minimal assumptions about the local software environment.
+
+In essence, the following should suffice to get started:
+1. Linux OS: Debian, Ubuntu, CentOS, Rocky and related distributions should be fine
+2. Python3: modern is likely better; the current target version can be found in `workflow/env/exec_env.yaml`. Older versions may or may not work.
+3. Conda: for automatic setup of all software dependencies
+    - Note that you can run the workflow w/o Conda, but then all tools listed under `workflow/envs/*.yaml` [not `dev_env.yaml`] need to be in your `$PATH`.
+
+For a detailed setup guide, please refer to [the workflow documentation](docs/README.md).
+
+**Internal (template) remark**: adapt the above if the workflow deployment has additional requirements (e.g., Apptainer).
+
+## Required input data
+
+Add info here - be concise, and provide more details in [the workflow documentation](docs/README.md).
+
+## Produced output data
+
+Add info here - be concise, and provide more details in [the workflow documentation](docs/README.md).
+
+# Citation
+
+If not indicated otherwise above, please follow [these instructions](CITATION.md) to cite this repository in your own work.
